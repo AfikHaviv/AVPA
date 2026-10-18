@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>CVE Exploit Pipeline</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>CVE &rarr; LLM Exploit Pipeline</h1>
+    <p class="subtitle">Educational use only &mdash; targets an isolated lab VM (e.g. Metasploitable2).</p>
+  </header>
+
+  <form id="run-form">
+    <input id="cve-id" type="text" placeholder="CVE-2011-2523" required>
+    <button type="submit" id="run-btn">Run Pipeline</button>
+  </form>
+
+  <div id="error" class="error hidden"></div>
+
+  <ol id="pipeline" class="pipeline">
+    <li class="stage" data-stage="Fetch CVE">
+      <span class="dot"></span>
+      <div class="label">
+        <strong>1. Fetch CVE</strong>
+        <span class="hint">Query the NVD API for the CVE's description, CVSS score and affected products.</span>
+      </div>
+    </li>
+    <li class="stage" data-stage="Classify CVE">
+      <span class="dot"></span>
+      <div class="label">
+        <strong>2. Classify CVE</strong>
+        <span class="hint">Classify the CVE as server-side or client-side (network service, web application, browser/engine, document/file parser, ...) from its description, CVSS vector and affected products.</span>
+      </div>
+    </li>
+    <li class="stage" data-stage="Generate & Explain Payload (LLM)">
+      <span class="dot"></span>
+      <div class="label">
+        <strong>3. Generate &amp; Explain Payload</strong>
+        <span class="hint">Prompt the open-source LLM to draft a PoC tailored to the CVE's classification, then to break it down and write an execution guide.</span>
+      </div>
+    </li>
+    <li class="stage" data-stage="Mock Execute (Simulated Target)">
+      <span class="dot"></span>
+      <div class="label">
+        <strong>4. Mock Execute</strong>
+        <span class="hint">Validate the payload's CVE-specific markers and replay a simulated exploitation transcript tailored to the CVE's classification. No real network target, browser, or application is touched.</span>
+      </div>
+    </li>
+    <li class="stage" data-stage="Save Artifacts">
+      <span class="dot"></span>
+      <div class="label">
+        <strong>5. Save Artifacts</strong>
+        <span class="hint">Write the exploit script, breakdown, execution guide, classification and mock execution report to output/&lt;CVE-ID&gt;/.</span>
+      </div>
+    </li>
+  </ol>
+
+  <section id="results" class="results hidden">
+    <details open>
+      <summary>CVE Details</summary>
+      <pre id="out-cve"></pre>
+    </details>
+    <details open>
+      <summary>Classification</summary>
+      <pre id="out-classification"></pre>
+    </details>
+    <details open>
+      <summary>Generated Payload</summary>
+      <pre id="out-code"></pre>
+    </details>
+    <details open>
+      <summary>Payload Breakdown</summary>
+      <pre id="out-breakdown"></pre>
+    </details>
+    <details open>
+      <summary>Execution Guide</summary>
+      <pre id="out-guide"></pre>
+    </details>
+    <details open>
+      <summary>Mock Execution Report</summary>
+      <pre id="out-mock"></pre>
+    </details>
+  </section>
+
+  <section id="live" class="live hidden">
+    <h2>Live Execution (real lab target)</h2>
+    <p class="hint">
+      Only for CVE-2011-2523 and CVE-2017-0144. This performs a real network
+      exploitation attempt &mdash; only run it against a lab VM you own or are
+      explicitly authorized to test.
+    </p>
+    <form id="live-form">
+      <input id="live-target" type="text" placeholder="Target IP, e.g. 192.168.56.101" required>
+      <input id="live-lhost" type="text" placeholder="LHOST (CVE-2017-0144 only)" class="hidden">
+      <label class="confirm">
+        <input id="live-confirmed" type="checkbox" required>
+        I own or am explicitly authorized to test this target
+      </label>
+      <button type="submit" id="live-btn">Run Live Exploit</button>
+    </form>
+    <div id="live-error" class="error hidden"></div>
+    <pre id="live-output" class="hidden"></pre>
+  </section>
+
+  <script id="live-cve-ids" type="application/json">{{ live_cve_ids | tojson }}</script>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

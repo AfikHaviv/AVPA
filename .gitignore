@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# uv
+.uv/
+uv.lock.tmp
+
+# Secrets - the encrypted .env.enc IS committed on purpose.
+# Only the plaintext env and the master decryption key must never be committed.
+.env
+.env.local
+.env.master.key
+*.key
+!*.pub.key
+
+# Pipeline output artifacts (generated payloads, breakdowns, guides)
+output/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
